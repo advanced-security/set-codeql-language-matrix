@@ -2,7 +2,7 @@
 
 This action reads the languages API for your repository and sets the CodeQL supported languages as the job matrix for your Actions run.
 
-## Why use this action?
+## Background 
 
 The default Actions workflow for CodeQL auto-populates the job matrix with your repo's supported CodeQL languages.  However, as new code is added to a repository, that language matrix is not updated.  You need to manually add those languages to the matrix definition to have CodeQL scan them.  
 
@@ -13,7 +13,7 @@ This action reads the repository languages API and adds all supported languages 
 Call this action before defining the CodeQL analyze job strategy, then set the matrix to the output from the action: `${{ fromJSON(needs.create-matrix.outputs.matrix) }}`
 
 **Example**
-```
+``` yaml
 name: "CodeQL"
 
 on: workflow_dispatch
@@ -61,3 +61,15 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+```      
+## License 
+
+This project is licensed under the terms of the MIT open source license. Please refer to [MIT](./LICENSE.md) for the full terms.
+
+## Maintainers 
+
+Take a look at [CODEOWNERS](./CODEOWNERS.md) to identify the maintainers.  
+
+## Support
+
+Got a question or issue?  Open an issue in this repo and tag any of the folks in [CODEOWNERS](./CODEOWNERS.md).
