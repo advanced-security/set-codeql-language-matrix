@@ -1,0 +1,21 @@
+# action.yml
+name: 'Set CodeQL Languages'
+description: 'Auto-populate the Actions matrix definition to include languages for CodeQL'
+inputs:
+  access-token:  
+    description: 'github token'
+    required: true
+  endpoint:
+    description: 'languages API endpoint'
+    required: true
+outputs:
+  languages:
+    description: 'List of languages that will set the job matrix'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+   - ${{ inputs.access-token }}
+   - ${{ inputs.endpoint }}
+   - ${{ inputs.codeql-languages }}
+
