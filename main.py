@@ -22,6 +22,8 @@ def build_languages_list(languages):
             languages[i] = ("csharp")
         if languages[i] == "c++":
             languages[i] = ("cpp")
+        if languages[i] == "c":
+            languages[i] = ("cpp")
 
     intersection = list(set(languages) & set(codeql_languages))
     return intersection
