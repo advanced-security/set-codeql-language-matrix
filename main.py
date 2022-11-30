@@ -31,8 +31,8 @@ def build_languages_list(languages):
 
 # Exclude languages set in the action.yml file
 def exclude_languages(language_list):
-    json.loads(exclude)
-    output = [language for language in language_list if language not in exclude]
+    excluded = json.loads(exclude)
+    output = [language for language in language_list if language not in excluded]
     return output
 
 # Set the output of the action
