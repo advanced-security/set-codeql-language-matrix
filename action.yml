@@ -11,7 +11,7 @@ inputs:
   excluded-languages:
     description: 'Use a list here to exclude specific languges from your CodeQL scan.  Example: ["python", "javascript"]'
     required: false
-    default: '[]'
+    # default: ''
 outputs:
   languages:
     description: 'List of languages that will set the job matrix'
