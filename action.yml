@@ -4,7 +4,7 @@ description: 'Auto-populate the Actions matrix definition to include languages f
 inputs:
   access-token:  
     description: 'github token'
-    required: true
+    required: false
   endpoint:
     description: 'languages API endpoint'
     required: true
@@ -15,7 +15,7 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-   - ${{ inputs.access-token }}
+   - ${{ secrets.GITHUB_TOKEN }}
    - ${{ inputs.endpoint }}
    - ${{ inputs.codeql-languages }}
 
