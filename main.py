@@ -33,7 +33,7 @@ def build_languages_list(languages):
 def exclude_languages(language_list):
     print(exclude)
     # excluded = json.loads(exclude)
-    print(excluded)
+    # print(excluded)
     output = [language for language in language_list if language not in exclude.split(',')]
     return output
 
