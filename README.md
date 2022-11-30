@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: leftrightleft/set-codeql-languages@v1
+        uses: advanced-security/set-codeql-languages@v1
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
