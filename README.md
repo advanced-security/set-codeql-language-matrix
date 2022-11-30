@@ -1,4 +1,4 @@
-# set-codeql-languages
+# Set CodeQL Language Matrix
 
 This action reads the languages API for your repository and sets the CodeQL supported languages as the job matrix for your Actions run.
 
@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: advanced-security/set-codeql-languages@v1
+        uses: advanced-security/set-codeql-language-matrix@v1
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
