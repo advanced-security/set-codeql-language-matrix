@@ -5,6 +5,7 @@ import sys
 
 token = sys.argv[1]
 endpoint = sys.argv[2]
+exclude = sys.argv[3]
 codeql_languages = ["cpp", "csharp", "go", "java", "javascript", "python", "ruby"]
 
 
@@ -28,6 +29,12 @@ def build_languages_list(languages):
     intersection = list(set(languages) & set(codeql_languages))
     return intersection
 
+# Exclude languages set in the action.yml file
+def exclude_languages(language_list):
+    json.loads(exclude)
+    output = [language for language in language_list if language not in exclude]
+    return output
+
 # Set the output of the action
 def set_action_output(output_name, value) :
     if "GITHUB_OUTPUT" in os.environ :
@@ -37,7 +44,8 @@ def set_action_output(output_name, value) :
 
 def main():
     languages = get_languages()
-    output = build_languages_list(languages)
+    language_list = build_languages_list(languages)
+    output = exclude_languages(language_list)
     set_action_output("languages", json.dumps(output))
 
 if __name__ == '__main__':
