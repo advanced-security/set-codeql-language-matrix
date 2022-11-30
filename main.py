@@ -32,9 +32,9 @@ def build_languages_list(languages):
 # return a list of objects from language list if they are not in the exclude list
 def exclude_languages(language_list):
     print(exclude)
-    excluded = json.loads(exclude)
+    # excluded = json.loads(exclude)
     print(excluded)
-    output = [language for language in language_list if language not in excluded]
+    output = [language for language in language_list if language not in exclude.split(',')]
     return output
 
 # Set the output of the action
