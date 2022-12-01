@@ -8,6 +8,8 @@ The default Actions workflow for CodeQL auto-populates the job matrix with your 
 
 This action reads the repository languages API and adds all supported languages to the job matrix.  No additional configuration is required.
 
+Learn more about the supported CodeQL languages [here](https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed)
+
 ## How to use this action
 
 Call this action before defining the CodeQL analyze job strategy, then set the matrix to the output from the action: `${{ fromJSON(needs.create-matrix.outputs.matrix) }}`
@@ -51,9 +53,6 @@ jobs:
       fail-fast: false
       matrix: 
         language: ${{ fromJSON(needs.create-matrix.outputs.matrix) }}
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'kotlin' ]
-        # Learn more:
-        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
 
     steps:
     - name: Checkout repository
@@ -74,6 +73,27 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
 ```      
+
+### Excluding CodeQL Languages
+It's possible you may choose to exclude specific languages from your CodeQL scans. In that canse, use the `exclude` input.
+
+Example:
+```
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.languages }}
+    steps:
+      - name: Get languages from repo
+        id: set-matrix
+        uses: advanced-security/set-codeql-language-matrix@v1
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          endpoint: ${{ github.event.repository.languages_url }}
+          exclude: 'java, python'
+
+```
+
 ## License 
 
 This project is licensed under the terms of the MIT open source license. Please refer to [MIT](./LICENSE.md) for the full terms.

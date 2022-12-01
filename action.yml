@@ -9,7 +9,7 @@ inputs:
     description: 'languages API endpoint'
     required: true
   exclude:
-    description: 'Use a list here to exclude specific languges from your CodeQL scan.  Example: "python, java"'
+    description: 'Use a comma separated list here to exclude specific languges from your CodeQL scan.  Example: "python, java"'
     required: false
 outputs:
   languages:
