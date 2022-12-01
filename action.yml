@@ -8,10 +8,9 @@ inputs:
   endpoint:
     description: 'languages API endpoint'
     required: true
-  excluded-languages:
-    description: 'Use a list here to exclude specific languges from your CodeQL scan.  Example: ["python", "javascript"]'
+  exclude:
+    description: 'Use a list here to exclude specific languges from your CodeQL scan.  Example: "python, java"'
     required: false
-    # default: ''
 outputs:
   languages:
     description: 'List of languages that will set the job matrix'
@@ -21,5 +20,5 @@ runs:
   args:
    - ${{ inputs.access-token }}
    - ${{ inputs.endpoint }}
-   - ${{ inputs.excluded-languages }}
+   - ${{ inputs.exclude }}
 
