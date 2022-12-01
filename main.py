@@ -31,11 +31,9 @@ def build_languages_list(languages):
 
 # return a list of objects from language list if they are not in the exclude list
 def exclude_languages(language_list):
-    print(exclude)
-    excluded = exclude.split(',')
-    print(excluded)
+    excluded = [x.strip() for x in exclude.split(',')]
     output = list(set(language_list).difference(excluded))
-    print(output)
+    print("languages={}".format(output))
     return output
 
 # Set the output of the action
