@@ -75,7 +75,7 @@ jobs:
 ```      
 
 ### Excluding CodeQL Languages
-It's possible you may choose to exclude specific languages from your CodeQL scans. In that canse, use the `exclude` input.
+It's possible you may choose to exclude specific languages from your CodeQL scans. In that case, use the `exclude` input.
 
 Example:
 ``` yaml
