@@ -34,7 +34,7 @@ def exclude_languages(language_list):
     print(exclude)
     excluded = exclude.split(',')
     print(excluded)
-    output = [language for language in language_list if language not in excluded]
+    output = list(set(language_list).difference(excluded))
     print(output)
     return output
 
