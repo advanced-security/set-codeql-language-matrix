@@ -1,6 +1,7 @@
 # action.yml
 name: 'Set CodeQL Languages'
 description: 'Auto-populate the Actions matrix definition to include languages for CodeQL'
+icon: lock
 inputs:
   access-token:  
     description: 'github token'
