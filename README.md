@@ -43,7 +43,7 @@ jobs:
     needs: create-matrix
     if: ${{ needs.create-matrix.outputs.matrix != '[]' }}
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     permissions:
       actions: read
       contents: read
