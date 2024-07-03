@@ -44,7 +44,7 @@ def exclude_languages(language_list):
 def set_action_output(output_name, value) :
     if "GITHUB_OUTPUT" in os.environ :
         with open(os.environ["GITHUB_OUTPUT"], "a") as f :
-            print("Detected languages: {0}={1}".format(output_name, value), file=f)
+            print("{0}={1}".format(output_name, value), file=f)
 
 def main():
     languages = get_languages()
