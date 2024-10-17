@@ -94,6 +94,27 @@ Example:
 
 ```
 
+### Swift support
+If you want to include Swift in your CodeQL analysis, you need to ensure that the action runs on a macOS runner. This is because Swift analysis with CodeQL requires a macOS environment. You can achieve this by making the `runs-on` field in your workflow conditional based on the language being analyzed.
+
+Example:
+``` yaml
+  analyze:
+    needs: create-matrix
+    if: ${{ needs.create-matrix.outputs.matrix != '[]' }}
+    name: Analyze
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+```
+
+If you want to run all languages **other than Swift** on a specific group of runners, you can adjust the `runs-on` line in your workflow as shown in the following example:
+``` yaml
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || fromJSON('{"group":"runner-group-name"}') }}
+```
+
 ## License 
 
 This project is licensed under the terms of the MIT open source license. Please refer to [MIT](./LICENSE.md) for the full terms.
