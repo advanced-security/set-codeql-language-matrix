@@ -6,7 +6,7 @@ import sys
 token = sys.argv[1]
 endpoint = sys.argv[2]
 exclude = sys.argv[3]
-codeql_languages = ["cpp", "csharp", "go", "java", "javascript", "python", "ruby", "typescript", "kotlin", "swift"]
+codeql_languages = ["actions", "cpp", "csharp", "go", "java", "javascript", "python", "ruby", "typescript", "kotlin", "swift"]
 
 
 # Connect to the languages API and return languages
@@ -29,6 +29,9 @@ def build_languages_list(languages):
             languages[i] = ("javascript")
         if languages[i] == "kotlin":
             languages[i] = ("java")
+        # GitHub Actions
+        if languages[i] == "yaml":
+            languages[i] = ("actions")
 
     intersection = list(set(languages) & set(codeql_languages))
     return intersection
@@ -54,5 +57,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
