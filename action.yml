@@ -12,7 +12,7 @@ inputs:
   exclude:
     description: 'Use a comma separated list here to exclude specific languges from your CodeQL scan.  Example: "python, java"'
     required: false
-  build-mode-override:
+  build-mode-manual-override:
     description: 'Use a comma separated list here to specify languages that should use manual build mode instead of the default. Example: "python, ruby"'
     required: false
 outputs:
@@ -27,5 +27,5 @@ runs:
    - ${{ inputs.access-token }}
    - ${{ inputs.endpoint }}
    - ${{ inputs.exclude }}
-   - ${{ inputs.build-mode-override }}
+   - ${{ inputs.build-mode-manual-override }}
 

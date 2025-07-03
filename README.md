@@ -105,7 +105,7 @@ By default, the action sets the build mode to:
 - `none` for most languages (python, javascript, ruby, rust, actions, etc.)
 - `manual` for languages that typically require custom build steps (go, swift, java)
 
-If you want to override this behavior and use manual build mode for specific languages, use the `build-mode-override` input:
+If you want to override this behavior and use manual build mode for specific languages, use the `build-mode-manual-override` input:
 
 ``` yaml
   create-matrix:
@@ -119,7 +119,7 @@ If you want to override this behavior and use manual build mode for specific lan
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
-          build-mode-override: 'python, ruby'
+          build-mode-manual-override: 'python, ruby'
 ```
 
 ### Actions support

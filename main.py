@@ -6,7 +6,7 @@ import sys
 token = sys.argv[1]
 endpoint = sys.argv[2]
 exclude = sys.argv[3] if len(sys.argv) > 3 else ""
-build_mode_override = sys.argv[4] if len(sys.argv) > 4 else ""
+build_mode_manual_override = sys.argv[4] if len(sys.argv) > 4 else ""
 codeql_languages = ["actions", "cpp", "csharp", "go", "java", "javascript", "python", "ruby", "rust", "typescript", "kotlin", "swift"]
 
 
@@ -75,8 +75,8 @@ def get_build_mode(language, original_languages=None):
         manual_by_default = language in ["go", "swift", "java"]
     
     # Check if user overrode build mode to manual
-    if build_mode_override:
-        override_languages = [x.strip() for x in build_mode_override.split(',')]
+    if build_mode_manual_override:
+        override_languages = [x.strip() for x in build_mode_manual_override.split(',')]
         if language in override_languages:
             return "manual"
         if original_languages:
