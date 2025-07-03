@@ -136,6 +136,8 @@ This project is licensed under the terms of the MIT open source license. Please 
 
 Take a look at [CODEOWNERS](./CODEOWNERS.md) to identify the maintainers.  
 
+Contributions are welcome! If you have an idea for a new feature or improvement, please open an issue or submit a pull request. Maintainers should use the [Contributing Guide](./CONTRIBUTING.md) to control version updates.
+
 ## Support
 
 Got a question or issue?  Open an issue in this repo and tag any of the folks in [CODEOWNERS](./CODEOWNERS.md).
