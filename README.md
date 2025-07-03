@@ -94,6 +94,19 @@ Example:
 
 ```
 
+### Actions support
+
+The GitHub API for [List repository languages](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-languages) does not by default include "YAML"/"GitHub Actions". This is particularly useful if your repository contains GitHub Actions workflows that you want to include in CodeQL analysis.
+
+To add support for this to your repo, you must add a `.gitattributes` file with the following contents:
+
+```
+.github/workflows/*.yml linguist-detectable -linguist-vendored
+.github/workflows/*.yaml linguist-detectable -linguist-vendored
+```
+
+These directives tell GitHub's linguist to detect YAML files in the `.github/workflows/` directory as a language and not treat them as vendored code, making them visible in the repository languages API.
+
 ### Swift support
 If you want to include Swift in your CodeQL analysis, you need to ensure that the action runs on a macOS runner. This is because Swift analysis with CodeQL requires a macOS environment. You can achieve this by making the `runs-on` field in your workflow conditional based on the language being analyzed.
 
@@ -122,6 +135,8 @@ This project is licensed under the terms of the MIT open source license. Please 
 ## Maintainers 
 
 Take a look at [CODEOWNERS](./CODEOWNERS.md) to identify the maintainers.  
+
+Contributions are welcome! If you have an idea for a new feature or improvement, please open an issue or submit a pull request. Maintainers should use the [Contributing Guide](./CONTRIBUTING.md) to control version updates.
 
 ## Support
 
