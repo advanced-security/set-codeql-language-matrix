@@ -29,8 +29,18 @@ on:
 jobs:
   create-matrix:
     runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.languages }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Get languages from repo
         id: set-matrix
@@ -43,7 +53,7 @@ jobs:
     needs: create-matrix
     if: ${{ needs.create-matrix.outputs.matrix != '[]' }}
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     permissions:
       actions: read
       contents: read
@@ -51,8 +61,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: 
-        language: ${{ fromJSON(needs.create-matrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.create-matrix.outputs.matrix) }}
 
     steps:
     - name: Checkout repository
@@ -63,10 +72,17 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
- 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+        build-mode: ${{ matrix.build-mode }}
+
+    - if: matrix.build-mode == 'manual'
+      shell: bash
+      run: |
+        echo 'If you are using a "manual" build mode for one or more of the' \
+          'languages you are analyzing, replace this with the commands to build' \
+          'your code, for example:'
+        echo '  make bootstrap'
+        echo '  make release'
+        exit 1
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
@@ -82,7 +98,7 @@ Example:
   create-matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.languages }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Get languages from repo
         id: set-matrix
@@ -92,6 +108,28 @@ Example:
           endpoint: ${{ github.event.repository.languages_url }}
           exclude: 'java, python'
 
+```
+
+### Build Mode Override
+By default, the action sets the build mode to:
+- `none` for most languages (python, javascript, ruby, rust, actions, etc.)
+- `manual` for languages that typically require custom build steps (go, swift, java)
+
+If you want to override this behavior and use manual build mode for specific languages, use the `build-mode-manual-override` input:
+
+``` yaml
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Get languages from repo
+        id: set-matrix
+        uses: advanced-security/set-codeql-language-matrix@v1
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          endpoint: ${{ github.event.repository.languages_url }}
+          build-mode-manual-override: 'java, csharp'
 ```
 
 ### Actions support
