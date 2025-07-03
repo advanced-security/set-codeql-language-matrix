@@ -51,7 +51,7 @@ def get_build_mode(language):
     # Languages that should use manual build mode by default
     manual_languages = ["go", "swift", "java"]
     
-    # Check if user overrode build mode
+    # Check if user overrode build mode to manual
     if build_mode_override:
         override_languages = [x.strip() for x in build_mode_override.split(',')]
         if language in override_languages:
