@@ -119,7 +119,7 @@ If you want to override this behavior and use manual build mode for specific lan
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
-          build-mode-manual-override: 'python, ruby'
+          build-mode-manual-override: 'java, csharp'
 ```
 
 ### Actions support
