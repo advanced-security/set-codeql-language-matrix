@@ -29,11 +29,11 @@ def build_languages_list(languages):
             languages[i] = ("javascript")
         if languages[i] == "kotlin":
             languages[i] = ("java")
-        # GitHub Actions
         if languages[i] == "yaml":
             languages[i] = ("actions")
-
+    print("After mapping:", languages)
     intersection = list(set(languages) & set(codeql_languages))
+    print("Intersection:", intersection)
     return intersection
 
 # return a list of objects from language list if they are not in the exclude list
