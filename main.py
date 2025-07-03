@@ -65,7 +65,7 @@ def get_build_mode(language, original_languages=None):
     if original_languages:
         # If any of the original languages require manual build mode, use manual
         for orig_lang in original_languages:
-            if orig_lang in ["kotlin", "go", "swift", "java"]:
+            if orig_lang in ["kotlin", "go", "swift"]:
                 manual_by_default = True
                 break
         else:
