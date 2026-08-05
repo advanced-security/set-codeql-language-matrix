@@ -7,7 +7,13 @@ token = sys.argv[1]
 endpoint = sys.argv[2]
 exclude = sys.argv[3] if len(sys.argv) > 3 else ""
 build_mode_manual_override = sys.argv[4] if len(sys.argv) > 4 else ""
-codeql_languages = ["actions", "cpp", "csharp", "go", "java", "javascript", "python", "ruby", "rust", "typescript", "kotlin", "swift"]
+standard_language_names = sys.argv[5] if len(sys.argv) > 5 else ""
+# Opt-in: use the standard combined CodeQL language names (e.g. "javascript-typescript")
+# as used by github/codeql-action, instead of the legacy single names (e.g. "javascript").
+# Defaults to False to preserve backward compatibility with existing workflows.
+use_standard_language_names = standard_language_names.strip().lower() in ("true", "1", "yes")
+codeql_languages = ["actions", "cpp", "c-cpp", "csharp", "go", "java", "java-kotlin", "javascript",
+                     "javascript-typescript", "python", "ruby", "rust", "typescript", "kotlin", "swift"]
 
 
 # Connect to the languages API and return languages
@@ -26,14 +32,16 @@ def build_languages_list(languages):
         mapped_lang = orig_lang
         if orig_lang == "c#":
             mapped_lang = "csharp"
-        elif orig_lang == "c++":
-            mapped_lang = "cpp"
-        elif orig_lang == "c":
-            mapped_lang = "cpp"
+        elif orig_lang in ("c++", "c"):
+            mapped_lang = "c-cpp" if use_standard_language_names else "cpp"
         elif orig_lang == "typescript":
-            mapped_lang = "javascript"
+            mapped_lang = "javascript-typescript" if use_standard_language_names else "javascript"
+        elif orig_lang == "javascript" and use_standard_language_names:
+            mapped_lang = "javascript-typescript"
         elif orig_lang == "kotlin":
-            mapped_lang = "java"
+            mapped_lang = "java-kotlin" if use_standard_language_names else "java"
+        elif orig_lang == "java" and use_standard_language_names:
+            mapped_lang = "java-kotlin"
         elif orig_lang == "yaml":
             mapped_lang = "actions"
         
@@ -72,7 +80,7 @@ def get_build_mode(language, original_languages=None):
             manual_by_default = False
     else:
         # Fallback to mapped language check
-        manual_by_default = language in ["go", "swift", "java"]
+        manual_by_default = language in ["go", "swift"]
     
     # Check if user overrode build mode to manual
     if build_mode_manual_override:

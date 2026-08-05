@@ -15,6 +15,10 @@ inputs:
   build-mode-manual-override:
     description: 'Use a comma separated list here to specify languages that should use manual build mode instead of the default. Example: "java, csharp"'
     required: false
+  standard-language-names:
+    description: 'Set to "true" to map aliased languages to the standard combined CodeQL language names used by github/codeql-action (e.g. "javascript-typescript" instead of "javascript", "java-kotlin" instead of "java", "c-cpp" instead of "cpp"). This avoids CodeQL treating these languages as separate entries in the code scanning tools page. Defaults to "false" to preserve backward compatibility with existing workflows.'
+    required: false
+    default: 'false'
 outputs:
   matrix:
     description: 'Matrix definition including language and build-mode configurations'
@@ -28,4 +32,5 @@ runs:
    - ${{ inputs.endpoint }}
    - ${{ inputs.exclude }}
    - ${{ inputs.build-mode-manual-override }}
+   - ${{ inputs.standard-language-names }}
 
