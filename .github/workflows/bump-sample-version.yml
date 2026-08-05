@@ -1,0 +1,67 @@
+# This repository has immutable releases enabled, so pinning to a full
+# release tag (e.g. `@v1.7.0`) is a secure alternative to a rolling major tag
+# (`@v1`) or a commit SHA, since the tag can't be moved or deleted once the
+# release is published. Whenever a new release is published, this workflow
+# opens (or updates) a pull request that bumps the version referenced in the
+# README.md samples to match.
+name: "Bump Sample Version"
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bump-sample-version:
+    name: Bump README sample version
+    # Pre-releases aren't a recommended pin target for samples.
+    if: ${{ github.event.release.prerelease == false }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Bump pinned action version in README
+        id: bump-version
+        env:
+          NEW_VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$NEW_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::warning::Release tag '$NEW_VERSION' is not a full 'vX.Y.Z' version. Skipping sample update."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Only full semantic version pins (e.g. "@v1.2.3") are handled here;
+          # rolling tags like "@v1" are left untouched.
+          sed -i -E "s#(advanced-security/set-codeql-language-matrix@)v[0-9]+\.[0-9]+\.[0-9]+#\1${NEW_VERSION}#g" README.md
+
+          if git diff --quiet -- README.md; then
+            echo "README.md already references ${NEW_VERSION}. Nothing to do."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git diff -- README.md
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.bump-version.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: bump sample version to ${{ github.event.release.tag_name }}"
+          title: "docs: bump sample version to ${{ github.event.release.tag_name }}"
+          body: |
+            Automated PR to bump the pinned action version referenced in the README.md samples to the latest release [`${{ github.event.release.tag_name }}`](${{ github.event.release.html_url }}).
+
+            Since this repository has immutable releases enabled, pinning samples to a full version tag (e.g. `@${{ github.event.release.tag_name }}`) is a secure, easy-to-read alternative to a rolling major tag like `@v1` or a full commit SHA.
+          branch: chore/bump-sample-version
+          base: main
+          delete-branch: true
+          labels: documentation
