@@ -80,7 +80,7 @@ def get_build_mode(language, original_languages=None):
             manual_by_default = False
     else:
         # Fallback to mapped language check
-        manual_by_default = language in ["go", "swift", "java", "java-kotlin"]
+        manual_by_default = language in ["go", "swift"]
     
     # Check if user overrode build mode to manual
     if build_mode_manual_override:

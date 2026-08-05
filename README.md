@@ -113,7 +113,7 @@ Example:
 ### Build Mode Override
 By default, the action sets the build mode to:
 - `none` for most languages (python, javascript, ruby, rust, actions, etc.)
-- `manual` for languages that typically require custom build steps (go, swift, java)
+- `manual` for languages that typically require custom build steps (go, swift, kotlin)
 
 If you want to override this behavior and use manual build mode for specific languages, use the `build-mode-manual-override` input:
 
