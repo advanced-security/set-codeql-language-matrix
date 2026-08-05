@@ -1,13 +1,9 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-#
-# ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
-# the `language` matrix defined below to confirm you have the correct set of
-# supported CodeQL languages.
+# This workflow uses this repository's own action (see `create-matrix` job
+# below) to auto-populate the CodeQL language matrix from the languages
+# detected in this repository. Dogfooding the action here means that any
+# future change to the action's code (main.py, Dockerfile, action.yml, etc.)
+# is exercised by this workflow, so it doubles as a CI check for the action
+# itself in addition to scanning this repository's own code.
 #
 name: "CodeQL Advanced"
 
@@ -20,7 +16,38 @@ on:
     - cron: '22 1 * * 4'
 
 jobs:
+  create-matrix:
+    name: Create language matrix
+    runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+
+    # Call this repository's own action to build the language matrix. This
+    # runs the action's Docker build against the current checkout, so any
+    # change to the action is validated by this workflow run.
+    - name: Get languages from repo
+      id: set-matrix
+      uses: ./
+      with:
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+        endpoint: ${{ github.event.repository.languages_url }}
+
   analyze:
+    needs: create-matrix
+    if: ${{ needs.create-matrix.outputs.matrix != '[]' }}
     name: Analyze (${{ matrix.language }})
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
@@ -41,18 +68,15 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        include:
-        - language: python
-          build-mode: none
-        # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
-        # Use `c-cpp` to analyze code written in C, C++ or both
-        # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
-        # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
-        # To learn more about changing the languages that are analyzed or customizing the build mode for your analysis,
-        # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
-        # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
-        # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
+      # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
+      # Use `c-cpp` to analyze code written in C, C++ or both
+      # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
+      # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+      # To learn more about changing the languages that are analyzed or customizing the build mode for your analysis,
+      # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
+      # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
+      # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
+      matrix: ${{ fromJSON(needs.create-matrix.outputs.matrix) }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v7
