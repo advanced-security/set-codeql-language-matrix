@@ -179,8 +179,10 @@ Example, using `git diff` to compute the changed files for a pull request:
       - name: Get changed files
         id: changed-files
         if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
-          echo "files=$(git diff --name-only "origin/${{ github.event.pull_request.base.ref }}"...HEAD | tr '\n' ',')" >> "$GITHUB_OUTPUT"
+          echo "files=$(git diff --name-only "origin/$BASE_REF"...HEAD | tr '\n' ',')" >> "$GITHUB_OUTPUT"
 
       - name: Get languages from repo
         id: set-matrix
@@ -231,6 +233,14 @@ Example:
 If you want to run all languages **other than Swift** on a specific group of runners, you can adjust the `runs-on` line in your workflow as shown in the following example:
 ``` yaml
     runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || fromJSON('{"group":"runner-group-name"}') }}
+```
+
+## Development
+
+`main.py`'s logic (language mapping, excludes, build modes, and the changed-files filter) is covered by unit tests in `test_main.py`. Run them with:
+
+```
+python3 -m unittest test_main.py
 ```
 
 ## License 
