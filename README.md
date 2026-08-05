@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: advanced-security/set-codeql-language-matrix@v1
+        uses: advanced-security/set-codeql-language-matrix@v1.6.0
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
@@ -90,6 +90,12 @@ jobs:
         category: "/language:${{matrix.language}}"
 ```      
 
+### Pinning a version
+
+The samples above pin to a full release version (e.g. `@v1.6.0`) rather than a rolling major tag (e.g. `@v1`). This repository has immutable releases enabled, so a full version tag can't be moved or deleted once it's published, making it a secure alternative to pinning by commit SHA while remaining easy to read.
+
+A [workflow](./.github/workflows/bump-sample-version.yml) in this repository automatically opens a pull request to bump the version referenced in these samples whenever a new release is published.
+
 ### Excluding CodeQL Languages
 It's possible you may choose to exclude specific languages from your CodeQL scans. In that case, use the `exclude` input.
 
@@ -102,7 +108,7 @@ Example:
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: advanced-security/set-codeql-language-matrix@v1
+        uses: advanced-security/set-codeql-language-matrix@v1.6.0
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
@@ -125,7 +131,7 @@ If you want to override this behavior and use manual build mode for specific lan
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: advanced-security/set-codeql-language-matrix@v1
+        uses: advanced-security/set-codeql-language-matrix@v1.6.0
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
@@ -148,7 +154,7 @@ Set the `standard-language-names` input to `'true'` to have this action emit the
     steps:
       - name: Get languages from repo
         id: set-matrix
-        uses: advanced-security/set-codeql-language-matrix@v1
+        uses: advanced-security/set-codeql-language-matrix@v1.6.0
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           endpoint: ${{ github.event.repository.languages_url }}
