@@ -5,7 +5,7 @@
 # is exercised by this workflow, so it doubles as a CI check for the action
 # itself in addition to scanning this repository's own code.
 #
-name: "CodeQL Advanced"
+name: "Self CodeQL Advanced"
 
 on:
   push:
