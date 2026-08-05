@@ -105,6 +105,7 @@ def parse_changed_files(raw):
         if isinstance(parsed, list):
             return [str(f).strip() for f in parsed if str(f).strip()]
     except ValueError:
+        # Not a JSON array (e.g. plain comma/newline/space separated list); fall through.
         pass
     return [f.strip() for f in raw.replace(",", "\n").split() if f.strip()]
 
