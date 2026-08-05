@@ -132,6 +132,31 @@ If you want to override this behavior and use manual build mode for specific lan
           build-mode-manual-override: 'java, csharp'
 ```
 
+### Standard CodeQL Language Names (opt-in)
+
+By default, this action maps related languages to a single legacy CodeQL language name, for example both `javascript` and `typescript` map to `javascript`, both `java` and `kotlin` map to `java`, and both `c` and `c++` map to `cpp`.
+
+`github/codeql-action` also supports standard combined names for these same language groupings: `javascript-typescript`, `java-kotlin`, and `c-cpp`. The default GitHub-generated CodeQL workflow uses these combined names. If your workflow uses the legacy names (as this action does by default) while other workflows or the default setup use the combined names, CodeQL will treat them as different tools/configurations and show duplicate, differentiated entries (e.g. `language:javascript` and `language:javascript-typescript`) on the code scanning tools page.
+
+Set the `standard-language-names` input to `'true'` to have this action emit the standard combined names instead:
+
+``` yaml
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Get languages from repo
+        id: set-matrix
+        uses: advanced-security/set-codeql-language-matrix@v1
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          endpoint: ${{ github.event.repository.languages_url }}
+          standard-language-names: 'true'
+```
+
+This defaults to `'false'` to preserve backward compatibility, since switching category names for an existing CodeQL setup starts a new analysis history for that language and disassociates previous findings until they age out.
+
 ### Actions support
 
 The GitHub API for [List repository languages](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-languages) does not by default include "YAML"/"GitHub Actions". This is particularly useful if your repository contains GitHub Actions workflows that you want to include in CodeQL analysis.
