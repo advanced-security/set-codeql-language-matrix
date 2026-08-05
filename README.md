@@ -157,6 +157,50 @@ Set the `standard-language-names` input to `'true'` to have this action emit the
 
 This defaults to `'false'` to preserve backward compatibility, since switching category names for an existing CodeQL setup starts a new analysis history for that language and disassociates previous findings until they age out.
 
+### Filtering by Changed Files
+
+By default, the matrix includes every CodeQL-supported language detected in the repository, even if a given pull request doesn't touch any files in that language. To scan only the languages actually touched by a pull request, pass the list of changed files to the `changed-files` input. It accepts a comma, space, or newline separated list of file paths, or a JSON array (the output formats used by most "changed files" actions).
+
+When `changed-files` is provided, the matrix is narrowed down to the intersection of: the languages detected in the repository, minus any `exclude`d languages, and further limited to only those with at least one changed file matching a known extension for that language. When `changed-files` is omitted (the default), the action's behavior is unchanged.
+
+Example, using `git diff` to compute the changed files for a pull request:
+
+``` yaml
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          echo "files=$(git diff --name-only "origin/$BASE_REF"...HEAD | tr '\n' ',')" >> "$GITHUB_OUTPUT"
+
+      - name: Get languages from repo
+        id: set-matrix
+        uses: advanced-security/set-codeql-language-matrix@v1
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          endpoint: ${{ github.event.repository.languages_url }}
+          changed-files: ${{ steps.changed-files.outputs.files }}
+```
+
+You can also use a dedicated action such as [`tj-actions/changed-files`](https://github.com/tj-actions/changed-files) to compute the `changed-files` input, including its JSON output format.
+
+#### ⚠️ Impact on required status checks and rulesets
+
+If your repository requires Code Scanning results before merge (via a branch protection rule or a repository/organization ruleset), skipping a language's analysis on a pull request means that language's expected category is never uploaded for that PR, so the required check for it will never be satisfied and the PR will be blocked. Only enable `changed-files` filtering if you don't enforce required Code Scanning results per-language, or if you have a way to satisfy those checks for the languages you skip.
+
+[`advanced-security/monorepo-code-scanning-action`](https://github.com/advanced-security/monorepo-code-scanning-action) has a [`republish-sarif`](https://github.com/advanced-security/monorepo-code-scanning-action#republish) action built for exactly this problem: it republishes each skipped language's most recent SARIF results from the base branch onto the pull request (and back onto the base branch on merge), so required checks stay satisfied without re-running the full scan. That action's `republish-sarif` step relies on its own project-based configuration (matching each CodeQL language/project to the paths it covers) and runs as a `github-script` step with access to the workflow's `github`/`context` objects, so it isn't something this action can invoke internally. Instead, pair the two actions in your workflow: use this action's `changed-files` input (or its own `changes` action) to build the matrix of languages to scan, then add a `republish-sarif` step after your analyze job to cover the languages that were skipped.
+
 ### Actions support
 
 The GitHub API for [List repository languages](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-languages) does not by default include "YAML"/"GitHub Actions". This is particularly useful if your repository contains GitHub Actions workflows that you want to include in CodeQL analysis.
@@ -189,6 +233,14 @@ Example:
 If you want to run all languages **other than Swift** on a specific group of runners, you can adjust the `runs-on` line in your workflow as shown in the following example:
 ``` yaml
     runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || fromJSON('{"group":"runner-group-name"}') }}
+```
+
+## Development
+
+`main.py`'s logic (language mapping, excludes, build modes, and the changed-files filter) is covered by unit tests in `test_main.py`. Run them with:
+
+```
+python3 -m unittest test_main.py
 ```
 
 ## License 
